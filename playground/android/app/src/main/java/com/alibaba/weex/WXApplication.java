@@ -49,7 +49,7 @@ import com.taobao.weex.common.WXException;
 
 import com.alibaba.weex.plugin.loader.WeexPluginContainer;
 
-import org.weex.plugin.queuebeacon.QueueBeaconModule;
+import com.subdiox.queuebeacon.QueueBeaconModule;
 
 public class WXApplication extends Application {
 

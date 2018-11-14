@@ -1,4 +1,4 @@
-package org.weex.plugin.queuebeacon;
+package com.subdiox.queuebeacon;
 
 import android.Manifest;
 import android.app.Activity;

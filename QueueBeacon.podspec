@@ -2,7 +2,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "QueueBeacon"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "Beacon Plugin for Weex created by Queue.Inc"
 
   s.description  = <<-DESC
@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios
   s.ios.deployment_target = "8.0"
 
-  s.source       = { :git => 'https://github.com/Queue-inc/queue-beacon', :tag => '1.0.0' }
+  s.source       = { :git => 'https://github.com/Queue-inc/queue-beacon', :tag => 'v1.0.0' }
   s.source_files  = "ios/Sources/*.{h,m,mm}"
   
   s.requires_arc = true
