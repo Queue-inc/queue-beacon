@@ -79,7 +79,7 @@ WX_EXPORT_METHOD(@selector(stop:))
     CLBeaconMajorValue major = [params[@"major"] integerValue];
     CLBeaconMinorValue minor = [params[@"minor"] integerValue];
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:proximityUUID];
-    if (major != 0 && minor != 0) {
+    if (major != 0 || minor != 0) {
         self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:major minor:minor identifier:identifier];
     } else {
         self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:identifier];

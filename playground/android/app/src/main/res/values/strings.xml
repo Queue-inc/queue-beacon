@@ -40,7 +40,6 @@ under the License.
         "WXMainActivity"
     </string>
     <string name="title_activity_dynamic">DynamicActivity</string>
-
     <string name="preferences_history_title">Preferences History Title</string>
     <string name="preferences_history_summary">Preferences History Summary</string>
 </resources>

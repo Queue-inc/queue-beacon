@@ -28,5 +28,5 @@ task clean(type: Delete) {
 
 ext {
     androidSupportVersion = "25.2.0"
-    weex_sdk = "0.18.0"
+    weex_sdk = "0.16.0"
 }
