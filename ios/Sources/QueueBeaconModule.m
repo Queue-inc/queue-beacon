@@ -87,13 +87,14 @@ WX_EXPORT_METHOD(@selector(stop:))
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     [self.locationManager requestAlwaysAuthorization];
-    [self.locationManager startRangingBeaconsInRegion:self.beaconRegion];
+    [self.locationManager startMonitoringForRegion:self.beaconRegion];
+    [self.locationManager requestStateForRegion:self.beaconRegion];
     NSLog(@"[QueueBeacon] ranging started");
 }
 
 - (void)stop: (WXKeepAliveCallback)callback {
     self.callback = callback;
-    [self.locationManager stopRangingBeaconsInRegion:self.beaconRegion];
+    [self.locationManager stopMonitoringForRegion:self.beaconRegion];
 }
 
 //- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
@@ -124,6 +125,17 @@ WX_EXPORT_METHOD(@selector(stop:))
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
     NSLog(@"[QueueBeacon] didDetermineState");
+    switch (state) {
+    case CLRegionStateInside:
+        if ([region isMemberOfClass:[CLBeaconRegion class]] && [CLLocationManager isRangingAvailable]) {
+            [self.locationManager startRangingBeaconsInRegion:self.beaconRegion];
+        }
+        break;
+    case CLRegionStateOutside:
+    case CLRegionStateUnknown:
+    default:
+        break;
+    }
     self.callback(@{
             @"name": @"didDetermineState",
             @"data": @{
@@ -171,6 +183,7 @@ WX_EXPORT_METHOD(@selector(stop:))
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     NSLog(@"[QueueBeacon] didEnterRegion");
+    [self.locationManager startRangingBeaconsInRegion:self.beaconRegion];
     self.callback(@{
         @"name": @"didEnterRegion",
         @"data": @{
@@ -181,6 +194,7 @@ WX_EXPORT_METHOD(@selector(stop:))
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
     NSLog(@"[QueueBeacon] didExitRegion");
+//    [self.locationManager stopRangingBeaconsInRegion:self.beaconRegion];
     self.callback(@{
         @"name": @"didExitRegion",
         @"data": @{

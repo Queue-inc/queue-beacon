@@ -371,6 +371,11 @@
 					775BEE7A1C1E8ECC008D1629 = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = BT44U96RS9;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					775BEE931C1E8ECC008D1629 = {
 						CreatedOnToolsVersion = 7.1.1;

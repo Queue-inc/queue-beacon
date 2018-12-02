@@ -35,6 +35,7 @@ public class QueueBeaconModule extends WXModule implements BeaconConsumer, Monit
     private static final String TAG = "QueueBeaconModule";
     private static final String IBEACON_FORMAT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
     private BeaconManager beaconManager;
+    private Region beaconRegion;
     private JSCallback callback;
 
     public QueueBeaconModule(){
@@ -90,7 +91,7 @@ public class QueueBeaconModule extends WXModule implements BeaconConsumer, Monit
         if (minorString != null) {
             minor = Identifier.parse(minorString);
         }
-        Region beaconRegion = new Region(identifier, uuid, major, minor);
+        beaconRegion = new Region(identifier, uuid, major, minor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Android M Permission check
             if (mWXSDKInstance.getContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -101,7 +102,8 @@ public class QueueBeaconModule extends WXModule implements BeaconConsumer, Monit
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(IBEACON_FORMAT));
         beaconManager.bind(this);
         try {
-            beaconManager.startRangingBeaconsInRegion(beaconRegion);
+            beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
+            beaconManager.requestStateForRegion(beaconRegion);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -110,7 +112,11 @@ public class QueueBeaconModule extends WXModule implements BeaconConsumer, Monit
 
     @JSMethod
     public void stop() {
-        beaconManager.unbind(this);
+        try {
+            beaconManager.stopMonitoringBeaconsInRegion(beaconRegion);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -122,6 +128,11 @@ public class QueueBeaconModule extends WXModule implements BeaconConsumer, Monit
     @Override
     public void didEnterRegion(Region region) {
         Log.d(TAG, "didEnterRegion");
+        try {
+            beaconManager.startRangingBeaconsInRegion(beaconRegion);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         HashMap<String, Object> result = new HashMap<>();
         result.put("name", "didEnterRegion");
         HashMap<String, Object> data = new HashMap<>();
@@ -154,8 +165,15 @@ public class QueueBeaconModule extends WXModule implements BeaconConsumer, Monit
     }
 
     @Override
-    public void didDetermineStateForRegion(int i, Region region) {
+    public void didDetermineStateForRegion(int state, Region region) {
         Log.d(TAG, "didDetermineState");
+        if (state == 1) {
+            try {
+                beaconManager.startRangingBeaconsInRegion(beaconRegion);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
         HashMap<String, Object> result = new HashMap<>();
         result.put("name", "didDetermineState");
         HashMap<String, Object> data = new HashMap<>();
@@ -163,7 +181,7 @@ public class QueueBeaconModule extends WXModule implements BeaconConsumer, Monit
         String major = getString(region.getId2());
         String minor = getString(region.getId3());
         data.put("identifier", region.getUniqueId());
-        data.put("state", stringFromState(i));
+        data.put("state", stringFromState(state));
 //        data.put("uuid", uuid);
 //        data.put("major", major);
 //        data.put("minor", minor);
